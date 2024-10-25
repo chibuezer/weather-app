@@ -20,7 +20,7 @@ This application displays the weather in New York City upon a GET /weather reque
 1. Build and run the Docker container:
     ```bash
     docker build -t weather-app .
-    docker run -e API_KEY=your-api-key -p 8000:8000 weather-app
+    docker run -e SECURE_WEATHER_API_KEY=your-api-key -p 8000:8000 weather-app
     ```
 
 2. Kubernetes deployment:
