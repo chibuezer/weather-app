@@ -32,3 +32,10 @@ This application displays the weather in New York City upon a GET /weather reque
 ### CI:
 This project uses GitHub Actions to automate Docker builds and linting. Ensure secrets encoded are added to the GitHub repo for Docker Hub.
 
+### Note:
+To install helm cli, go to: https://helm.sh/docs/intro/install/
+
+Use the Helm CLI to create a new Helm chart: 
+helm create weather-app
+
+
