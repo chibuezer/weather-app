@@ -3,27 +3,27 @@ FROM python:3.11-slim
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
+ENV POETRY_HOME="/opt/poetry"
+ENV PATH="$POETRY_HOME/bin:$PATH"
 ENV POETRY_VIRTUALENVS_CREATE=false
 
 # Install dependencies
-RUN apt-get update && apt-get install -y \
-    curl \
-    && apt-get clean
+RUN apt-get update && apt-get install -y curl && apt-get clean
 
-# Install Poetry for dependency management
+# Install Poetry
 RUN curl -sSL https://install.python-poetry.org | python3 -
 
 # Create and set working directory
 WORKDIR /app
 
-# Copy project files
+# Copy and install dependencies
 COPY pyproject.toml poetry.lock ./
-COPY weather_app ./weather_app
-
-# Install dependencies
 RUN poetry install --no-dev --no-root
 
-# Expose the port that the app runs on
+# Copy the application code
+COPY weather_app ./weather_app
+
+# Expose the application port
 EXPOSE 8000
 
 # Run the app
