@@ -1,68 +1,35 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "weather-app.fullname" . }}
+  name: {{ .Chart.Name }}
   labels:
-    {{- include "weather-app.labels" . | nindent 4 }}
+    app: {{ .Chart.Name }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
-  {{- end }}
   selector:
     matchLabels:
-      {{- include "weather-app.selectorLabels" . | nindent 6 }}
+      app: {{ .Chart.Name }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
-      annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       labels:
-        {{- include "weather-app.labels" . | nindent 8 }}
-        {{- with .Values.podLabels }}
-        {{- toYaml . | nindent 8 }}
-        {{- end }}
+        app: {{ .Chart.Name }}
     spec:
-      {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      serviceAccountName: {{ include "weather-app.serviceAccountName" . }}
-      securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"   
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           ports:
-            - name: http
-              containerPort: {{ .Values.service.port }}
-              protocol: TCP
-          livenessProbe:
-            {{- toYaml .Values.livenessProbe | nindent 12 }}
-          readinessProbe:
-            {{- toYaml .Values.readinessProbe | nindent 12 }}
+            - containerPort: {{ .Values.service.port }}
+          env:
+            - name: API_KEY
+              value: {{ .Values.env.API_KEY | quote }}
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-          {{- with .Values.volumeMounts }}
-          volumeMounts:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-      {{- with .Values.volumes }}
+            limits:
+              memory: {{ .Values.resources.limits.memory }}
+              cpu: {{ .Values.resources.limits.cpu }}
+            requests:
+              memory: {{ .Values.resources.requests.memory }}
+              cpu: {{ .Values.resources.requests.cpu }}
       volumes:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.nodeSelector }}
+      {{ .Values.nodeSelector }}
       nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+      {{ .Values.affinity }}
